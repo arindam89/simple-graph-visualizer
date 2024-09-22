@@ -2,6 +2,13 @@ const canvas = document.getElementById('graph-canvas');
 const ctx = canvas.getContext('2d');
 let graph = new Graph();
 let nodePositions = new Map();
+let animationState = {
+    isPlaying: false,
+    currentStep: 0,
+    steps: [],
+    result: [],
+    distances: null
+};
 
 function resizeCanvas() {
     canvas.width = canvas.clientWidth;
@@ -135,25 +142,82 @@ function displayFinalResult(result, distances = null) {
     resultDiv.classList.remove('hidden');
 }
 
-function animateAlgorithm(steps, result, distances = null) {
-    const speed = document.getElementById('animation-speed').value;
-    let i = 0;
-    function animate() {
-        if (i < steps.length) {
-            const step = steps[i];
-            if (step.type === 'visit') {
-                drawGraph(step.node);
-            } else if (step.type === 'edge') {
-                drawGraph(null, { from: step.from, to: step.to });
-            }
-            i++;
-            setTimeout(animate, 1000 / speed);
-        } else {
-            drawGraph();
-            displayFinalResult(result, distances);
+function animateStep() {
+    if (animationState.currentStep < animationState.steps.length) {
+        const step = animationState.steps[animationState.currentStep];
+        if (step.type === 'visit') {
+            drawGraph(step.node);
+        } else if (step.type === 'edge') {
+            drawGraph(null, { from: step.from, to: step.to });
         }
+        animationState.currentStep++;
+        updateAnimationControls();
+    } else {
+        stopAnimation();
     }
-    animate();
+}
+
+function startAnimation() {
+    animationState.isPlaying = true;
+    document.getElementById('play-pause').textContent = 'Pause';
+    animateNextStep();
+}
+
+function pauseAnimation() {
+    animationState.isPlaying = false;
+    document.getElementById('play-pause').textContent = 'Play';
+}
+
+function stopAnimation() {
+    pauseAnimation();
+    animationState.currentStep = 0;
+    drawGraph();
+    displayFinalResult(animationState.result, animationState.distances);
+    updateAnimationControls();
+}
+
+function animateNextStep() {
+    if (animationState.isPlaying) {
+        animateStep();
+        const speed = document.getElementById('animation-speed').value;
+        setTimeout(animateNextStep, 1000 / speed);
+    }
+}
+
+function updateAnimationControls() {
+    const playPauseBtn = document.getElementById('play-pause');
+    const stepBtn = document.getElementById('step');
+    const progress = document.getElementById('animation-progress');
+
+    playPauseBtn.disabled = animationState.currentStep >= animationState.steps.length;
+    stepBtn.disabled = animationState.currentStep >= animationState.steps.length;
+    progress.textContent = `Step ${animationState.currentStep} / ${animationState.steps.length}`;
+}
+
+document.getElementById('play-pause').addEventListener('click', () => {
+    if (animationState.isPlaying) {
+        pauseAnimation();
+    } else {
+        startAnimation();
+    }
+});
+
+document.getElementById('step').addEventListener('click', () => {
+    pauseAnimation();
+    animateStep();
+});
+
+document.getElementById('reset').addEventListener('click', () => {
+    stopAnimation();
+});
+
+function animateAlgorithm(steps, result, distances = null) {
+    animationState.steps = steps;
+    animationState.result = result;
+    animationState.distances = distances;
+    animationState.currentStep = 0;
+    updateAnimationControls();
+    startAnimation();
 }
 
 function euclideanDistance(node1, node2) {

@@ -29,6 +29,12 @@
                 <input type="range" id="animation-speed" min="1" max="10" value="5" class="w-48">
             </div>
         </div>
+        <div id="animation-controls" class="bg-white shadow-md rounded-lg p-4 mb-4 flex flex-wrap justify-center gap-2">
+            <button id="play-pause" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Play</button>
+            <button id="step" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Step</button>
+            <button id="reset" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Reset</button>
+            <div id="animation-progress" class="text-gray-700 font-bold py-2 px-4">Step 0 / 0</div>
+        </div>
         <canvas id="graph-canvas" class="bg-white border border-gray-300 rounded-lg flex-grow"></canvas>
         <div id="algorithm-result" class="bg-gray-200 mt-4 p-4 rounded-lg text-center text-lg font-bold hidden"></div>
     </main>
