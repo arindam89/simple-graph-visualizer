@@ -21,6 +21,7 @@
                 <option value="bfs">Breadth-First Search (BFS)</option>
                 <option value="dfs">Depth-First Search (DFS)</option>
                 <option value="dijkstra">Dijkstra's Algorithm</option>
+                <option value="astar">A* Search</option>
             </select>
             <button id="run-algorithm" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded">Run Algorithm</button>
             <button id="save-graph" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded">Save Graph</button>
@@ -39,12 +40,21 @@
             </div>
             <div id="animation-progress" class="text-gray-700 font-bold py-2 px-4">Step 0 / 0</div>
         </div>
-        <canvas id="graph-canvas" class="bg-white border border-gray-300 rounded-lg flex-grow"></canvas>
+        <div class="flex flex-col md:flex-row gap-4">
+            <div class="w-full md:w-2/3">
+                <canvas id="graph-canvas" class="bg-white border border-gray-300 rounded-lg w-full h-[400px]"></canvas>
+            </div>
+            <div id="tutorial-section" class="w-full md:w-1/3 bg-white shadow-md rounded-lg p-4">
+                <h2 class="text-xl font-bold mb-2">Algorithm Tutorial</h2>
+                <div id="tutorial-content" class="text-sm"></div>
+            </div>
+        </div>
         <div id="algorithm-result" class="bg-gray-200 mt-4 p-4 rounded-lg text-center text-lg font-bold hidden"></div>
         <div id="step-explanation" class="bg-yellow-100 mt-2 p-2 rounded-lg text-center text-sm hidden"></div>
     </main>
     <script src="{{ url_for('static', filename='js/graph.js') }}"></script>
     <script src="{{ url_for('static', filename='js/algorithms.js') }}"></script>
     <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/tutorials.js') }}"></script>
 </body>
 </html>

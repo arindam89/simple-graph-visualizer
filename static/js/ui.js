@@ -409,5 +409,18 @@ document.getElementById('load-graph').addEventListener('click', () => {
     });
 });
 
+function initializeTutorials() {
+    const algorithmSelect = document.getElementById('algorithm');
+    updateTutorial(algorithmSelect.value);
+
+    algorithmSelect.addEventListener('change', (event) => {
+        updateTutorial(event.target.value);
+    });
+}
+
+window.addEventListener('load', () => {
+    resizeCanvas();
+    initializeTutorials();
+});
+
 window.addEventListener('resize', resizeCanvas);
-resizeCanvas();
