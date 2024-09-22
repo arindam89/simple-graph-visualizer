@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Algorithm Visualization</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Graph Algorithm Visualization</h1>
+    </header>
+    <main>
+        <div id="controls">
+            <button id="generate-graph">Generate Random Graph</button>
+            <button id="add-node">Add Node</button>
+            <button id="remove-node">Remove Node</button>
+            <button id="add-edge">Add Edge</button>
+            <button id="remove-edge">Remove Edge</button>
+            <select id="algorithm">
+                <option value="bfs">Breadth-First Search (BFS)</option>
+                <option value="dfs">Depth-First Search (DFS)</option>
+            </select>
+            <button id="run-algorithm">Run Algorithm</button>
+        </div>
+        <canvas id="graph-canvas"></canvas>
+    </main>
+    <script src="{{ url_for('static', filename='js/graph.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/algorithms.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+</body>
+</html>
