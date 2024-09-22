@@ -86,3 +86,56 @@ function dijkstra(graph, startNode) {
 
     return { steps, result, distances, previous };
 }
+
+function aStar(graph, startNode, goalNode, heuristic) {
+    const openSet = new Set([startNode]);
+    const closedSet = new Set();
+    const gScore = new Map();
+    const fScore = new Map();
+    const cameFrom = new Map();
+    const steps = [];
+    const result = [];
+
+    gScore.set(startNode, 0);
+    fScore.set(startNode, heuristic(startNode, goalNode));
+
+    while (openSet.size > 0) {
+        const currentNode = Array.from(openSet).reduce((a, b) => fScore.get(a) < fScore.get(b) ? a : b);
+
+        if (currentNode === goalNode) {
+            // Reconstruct path
+            let current = currentNode;
+            while (current !== null) {
+                result.unshift(current);
+                current = cameFrom.get(current);
+            }
+            return { steps, result };
+        }
+
+        openSet.delete(currentNode);
+        closedSet.add(currentNode);
+        steps.push({ node: currentNode, type: 'visit' });
+
+        for (const { id: neighbor, weight } of graph.getNeighbors(currentNode)) {
+            if (closedSet.has(neighbor)) {
+                continue;
+            }
+
+            const tentativeGScore = gScore.get(currentNode) + weight;
+
+            if (!openSet.has(neighbor)) {
+                openSet.add(neighbor);
+            } else if (tentativeGScore >= gScore.get(neighbor)) {
+                continue;
+            }
+
+            cameFrom.set(neighbor, currentNode);
+            gScore.set(neighbor, tentativeGScore);
+            fScore.set(neighbor, gScore.get(neighbor) + heuristic(neighbor, goalNode));
+            steps.push({ from: currentNode, to: neighbor, type: 'edge' });
+        }
+    }
+
+    // No path found
+    return { steps, result: [] };
+}

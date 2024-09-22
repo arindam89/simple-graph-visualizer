@@ -156,6 +156,12 @@ function animateAlgorithm(steps, result, distances = null) {
     animate();
 }
 
+function euclideanDistance(node1, node2) {
+    const pos1 = nodePositions.get(node1);
+    const pos2 = nodePositions.get(node2);
+    return Math.sqrt(Math.pow(pos1.x - pos2.x, 2) + Math.pow(pos1.y - pos2.y, 2));
+}
+
 document.getElementById('run-algorithm').addEventListener('click', () => {
     const algorithm = document.getElementById('algorithm').value;
     const startNode = parseInt(prompt('Enter start node ID:'));
@@ -171,6 +177,14 @@ document.getElementById('run-algorithm').addEventListener('click', () => {
         } else if (algorithm === 'dijkstra') {
             algorithmResult = dijkstra(graph, startNode);
             animateAlgorithm(algorithmResult.steps, algorithmResult.result, algorithmResult.distances);
+        } else if (algorithm === 'astar') {
+            const goalNode = parseInt(prompt('Enter goal node ID:'));
+            if (graph.nodes.has(goalNode)) {
+                algorithmResult = aStar(graph, startNode, goalNode, euclideanDistance);
+                animateAlgorithm(algorithmResult.steps, algorithmResult.result);
+            } else {
+                alert('Invalid goal node ID');
+            }
         }
     } else {
         alert('Invalid start node ID');
