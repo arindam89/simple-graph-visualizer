@@ -311,5 +311,103 @@ document.getElementById('run-algorithm').addEventListener('click', () => {
     }
 });
 
+function serializeGraph() {
+    const serializedGraph = {
+        nodes: Array.from(graph.nodes.keys()),
+        edges: [],
+        positions: {}
+    };
+
+    for (const [nodeId, neighbors] of graph.nodes.entries()) {
+        for (const [neighborId, weight] of neighbors.entries()) {
+            serializedGraph.edges.push({ source: nodeId, target: neighborId, weight });
+        }
+    }
+
+    for (const [nodeId, position] of nodePositions.entries()) {
+        serializedGraph.positions[nodeId] = position;
+    }
+
+    return JSON.stringify(serializedGraph);
+}
+
+function deserializeGraph(serializedGraph) {
+    const parsedGraph = JSON.parse(serializedGraph);
+    graph = new Graph();
+    nodePositions.clear();
+
+    for (const nodeId of parsedGraph.nodes) {
+        graph.addNode(parseInt(nodeId));
+    }
+
+    for (const edge of parsedGraph.edges) {
+        graph.addEdge(parseInt(edge.source), parseInt(edge.target), edge.weight);
+    }
+
+    for (const [nodeId, position] of Object.entries(parsedGraph.positions)) {
+        nodePositions.set(parseInt(nodeId), position);
+    }
+
+    drawGraph();
+}
+
+document.getElementById('save-graph').addEventListener('click', () => {
+    const graphData = serializeGraph();
+    const graphName = prompt('Enter a name for this graph:');
+    if (graphName) {
+        fetch('/save_graph', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name: graphName, data: graphData }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Graph saved successfully!');
+            } else {
+                alert('Failed to save graph.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while saving the graph.');
+        });
+    }
+});
+
+document.getElementById('load-graph').addEventListener('click', () => {
+    fetch('/get_saved_graphs')
+    .then(response => response.json())
+    .then(data => {
+        if (data.graphs && data.graphs.length > 0) {
+            const graphName = prompt('Enter the name of the graph to load:\n\nAvailable graphs:\n' + data.graphs.join('\n'));
+            if (graphName) {
+                fetch(`/load_graph/${graphName}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        deserializeGraph(data.graph_data);
+                        alert('Graph loaded successfully!');
+                    } else {
+                        alert('Failed to load graph.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while loading the graph.');
+                });
+            }
+        } else {
+            alert('No saved graphs available.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while fetching saved graphs.');
+    });
+});
+
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
