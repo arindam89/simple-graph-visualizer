@@ -23,19 +23,23 @@
                 <option value="dijkstra">Dijkstra's Algorithm</option>
             </select>
             <button id="run-algorithm" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded">Run Algorithm</button>
-            <div class="w-full flex items-center justify-center mt-2">
-                <label for="animation-speed" class="mr-2">Animation Speed:</label>
-                <input type="range" id="animation-speed" min="1" max="10" value="5" class="w-48">
-            </div>
         </div>
         <div id="animation-controls" class="bg-white shadow-md rounded-lg p-4 mb-4 flex flex-wrap justify-center gap-2">
             <button id="play-pause" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Play</button>
             <button id="step" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Step</button>
             <button id="reset" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Reset</button>
+            <div class="w-full flex items-center justify-center mt-2">
+                <label for="animation-speed" class="mr-2">Animation Speed:</label>
+                <input type="range" id="animation-speed" min="1" max="10" value="5" class="w-48">
+            </div>
+            <div id="progress-bar" class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                <div id="progress" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+            </div>
             <div id="animation-progress" class="text-gray-700 font-bold py-2 px-4">Step 0 / 0</div>
         </div>
         <canvas id="graph-canvas" class="bg-white border border-gray-300 rounded-lg flex-grow"></canvas>
         <div id="algorithm-result" class="bg-gray-200 mt-4 p-4 rounded-lg text-center text-lg font-bold hidden"></div>
+        <div id="step-explanation" class="bg-yellow-100 mt-2 p-2 rounded-lg text-center text-sm hidden"></div>
     </main>
     <script src="{{ url_for('static', filename='js/graph.js') }}"></script>
     <script src="{{ url_for('static', filename='js/algorithms.js') }}"></script>

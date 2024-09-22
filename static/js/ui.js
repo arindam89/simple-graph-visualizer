@@ -16,6 +16,18 @@ function resizeCanvas() {
     drawGraph();
 }
 
+function drawArrow(fromx, fromy, tox, toy) {
+    const headlen = 10;
+    const dx = tox - fromx;
+    const dy = toy - fromy;
+    const angle = Math.atan2(dy, dx);
+    ctx.moveTo(fromx, fromy);
+    ctx.lineTo(tox, toy);
+    ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+    ctx.moveTo(tox, toy);
+    ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+}
+
 function drawGraph(highlightedNode = null, highlightedEdge = null) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -27,8 +39,7 @@ function drawGraph(highlightedNode = null, highlightedEdge = null) {
         for (const [neighborId, weight] of neighbors.entries()) {
             const targetPos = nodePositions.get(neighborId);
             ctx.beginPath();
-            ctx.moveTo(sourcePos.x, sourcePos.y);
-            ctx.lineTo(targetPos.x, targetPos.y);
+            drawArrow(sourcePos.x, sourcePos.y, targetPos.x, targetPos.y);
             ctx.stroke();
 
             // Draw weight
@@ -49,8 +60,7 @@ function drawGraph(highlightedNode = null, highlightedEdge = null) {
         ctx.strokeStyle = '#ff0000';
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.moveTo(sourcePos.x, sourcePos.y);
-        ctx.lineTo(targetPos.x, targetPos.y);
+        drawArrow(sourcePos.x, sourcePos.y, targetPos.x, targetPos.y);
         ctx.stroke();
     }
 
@@ -69,6 +79,16 @@ function drawGraph(highlightedNode = null, highlightedEdge = null) {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(nodeId, pos.x, pos.y);
+
+        // Display distance for Dijkstra's algorithm
+        if (animationState.distances) {
+            const distance = animationState.distances.get(nodeId);
+            if (distance !== undefined && distance !== Infinity) {
+                ctx.fillStyle = '#000';
+                ctx.font = '12px Arial';
+                ctx.fillText(`D: ${distance}`, pos.x, pos.y + 30);
+            }
+        }
     }
 }
 
@@ -142,6 +162,19 @@ function displayFinalResult(result, distances = null) {
     resultDiv.classList.remove('hidden');
 }
 
+function getStepExplanation(step, algorithm) {
+    switch (algorithm) {
+        case 'bfs':
+            return step.type === 'visit' ? `Visiting node ${step.node}` : `Exploring edge from ${step.from} to ${step.to}`;
+        case 'dfs':
+            return step.type === 'visit' ? `Visiting node ${step.node}` : `Exploring edge from ${step.from} to ${step.to}`;
+        case 'dijkstra':
+            return step.type === 'visit' ? `Updating distances for neighbors of node ${step.node}` : `Relaxing edge from ${step.from} to ${step.to}`;
+        default:
+            return '';
+    }
+}
+
 function animateStep() {
     if (animationState.currentStep < animationState.steps.length) {
         const step = animationState.steps[animationState.currentStep];
@@ -150,6 +183,12 @@ function animateStep() {
         } else if (step.type === 'edge') {
             drawGraph(null, { from: step.from, to: step.to });
         }
+        
+        // Update step explanation
+        const stepExplanation = document.getElementById('step-explanation');
+        stepExplanation.textContent = getStepExplanation(step, document.getElementById('algorithm').value);
+        stepExplanation.classList.remove('hidden');
+
         animationState.currentStep++;
         updateAnimationControls();
     } else {
@@ -174,6 +213,7 @@ function stopAnimation() {
     drawGraph();
     displayFinalResult(animationState.result, animationState.distances);
     updateAnimationControls();
+    document.getElementById('step-explanation').classList.add('hidden');
 }
 
 function animateNextStep() {
@@ -188,10 +228,14 @@ function updateAnimationControls() {
     const playPauseBtn = document.getElementById('play-pause');
     const stepBtn = document.getElementById('step');
     const progress = document.getElementById('animation-progress');
+    const progressBar = document.getElementById('progress');
 
     playPauseBtn.disabled = animationState.currentStep >= animationState.steps.length;
     stepBtn.disabled = animationState.currentStep >= animationState.steps.length;
     progress.textContent = `Step ${animationState.currentStep} / ${animationState.steps.length}`;
+    
+    const progressPercentage = (animationState.currentStep / animationState.steps.length) * 100;
+    progressBar.style.width = `${progressPercentage}%`;
 }
 
 document.getElementById('play-pause').addEventListener('click', () => {
