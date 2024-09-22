@@ -88,6 +88,7 @@ function dijkstra(graph, startNode) {
 }
 
 function aStar(graph, startNode, goalNode, heuristic) {
+    console.log(`A* Search: Start node: ${startNode}, Goal node: ${goalNode}`);
     const openSet = new Set([startNode]);
     const closedSet = new Set();
     const gScore = new Map();
@@ -100,15 +101,19 @@ function aStar(graph, startNode, goalNode, heuristic) {
     fScore.set(startNode, heuristic(startNode, goalNode));
 
     while (openSet.size > 0) {
+        console.log(`Open set: ${Array.from(openSet)}`);
         const currentNode = Array.from(openSet).reduce((a, b) => fScore.get(a) < fScore.get(b) ? a : b);
+        console.log(`Current node: ${currentNode}`);
 
         if (currentNode === goalNode) {
+            console.log('Goal reached, reconstructing path...');
             // Reconstruct path
             let current = currentNode;
             while (current !== null) {
                 result.unshift(current);
                 current = cameFrom.get(current);
             }
+            console.log(`Path found: ${result.join(' -> ')}`);
             return { steps, result };
         }
 
@@ -117,25 +122,32 @@ function aStar(graph, startNode, goalNode, heuristic) {
         steps.push({ node: currentNode, type: 'visit' });
 
         for (const { id: neighbor, weight } of graph.getNeighbors(currentNode)) {
+            console.log(`Checking neighbor: ${neighbor}`);
             if (closedSet.has(neighbor)) {
+                console.log(`Neighbor ${neighbor} already in closed set, skipping`);
                 continue;
             }
 
             const tentativeGScore = gScore.get(currentNode) + weight;
+            console.log(`Tentative g-score for ${neighbor}: ${tentativeGScore}`);
 
             if (!openSet.has(neighbor)) {
                 openSet.add(neighbor);
+                console.log(`Added ${neighbor} to open set`);
             } else if (tentativeGScore >= gScore.get(neighbor)) {
+                console.log(`Path to ${neighbor} not better, skipping`);
                 continue;
             }
 
             cameFrom.set(neighbor, currentNode);
             gScore.set(neighbor, tentativeGScore);
             fScore.set(neighbor, gScore.get(neighbor) + heuristic(neighbor, goalNode));
+            console.log(`Updated scores for ${neighbor}: g=${gScore.get(neighbor)}, f=${fScore.get(neighbor)}`);
             steps.push({ from: currentNode, to: neighbor, type: 'edge' });
         }
     }
 
+    console.log('No path found');
     // No path found
     return { steps, result: [] };
 }

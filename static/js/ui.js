@@ -221,8 +221,12 @@ function animateAlgorithm(steps, result, distances = null) {
 }
 
 function euclideanDistance(node1, node2) {
-    const pos1 = nodePositions.get(node1);
-    const pos2 = nodePositions.get(node2);
+    const pos1 = nodePositions.get(parseInt(node1));
+    const pos2 = nodePositions.get(parseInt(node2));
+    if (!pos1 || !pos2) {
+        console.error(`Invalid node positions: node1=${node1}, node2=${node2}, pos1=${pos1}, pos2=${pos2}`);
+        return 0;
+    }
     return Math.sqrt(Math.pow(pos1.x - pos2.x, 2) + Math.pow(pos1.y - pos2.y, 2));
 }
 
@@ -244,8 +248,16 @@ document.getElementById('run-algorithm').addEventListener('click', () => {
         } else if (algorithm === 'astar') {
             const goalNode = parseInt(prompt('Enter goal node ID:'));
             if (graph.nodes.has(goalNode)) {
+                console.log(`Running A* algorithm from node ${startNode} to node ${goalNode}`);
                 algorithmResult = aStar(graph, startNode, goalNode, euclideanDistance);
-                animateAlgorithm(algorithmResult.steps, algorithmResult.result);
+                console.log('A* algorithm result:', algorithmResult);
+                if (algorithmResult.result.length > 0) {
+                    console.log(`Path found: ${algorithmResult.result.join(' -> ')}`);
+                    animateAlgorithm(algorithmResult.steps, algorithmResult.result);
+                } else {
+                    console.log('No path found');
+                    alert('No path found between the start and goal nodes.');
+                }
             } else {
                 alert('Invalid goal node ID');
             }
