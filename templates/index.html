@@ -4,29 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Graph Algorithm Visualization</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <header>
-        <h1>Graph Algorithm Visualization</h1>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <header class="bg-blue-600 text-white py-4">
+        <h1 class="text-2xl md:text-3xl font-bold text-center">Graph Algorithm Visualization</h1>
     </header>
-    <main>
-        <div id="controls">
-            <button id="generate-graph">Generate Random Graph</button>
-            <button id="add-node">Add Node</button>
-            <button id="remove-node">Remove Node</button>
-            <button id="add-edge">Add Edge</button>
-            <button id="remove-edge">Remove Edge</button>
-            <select id="algorithm">
+    <main class="flex-grow flex flex-col p-4">
+        <div id="controls" class="bg-white shadow-md rounded-lg p-4 mb-4 flex flex-wrap justify-center gap-2">
+            <button id="generate-graph" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded">Generate Random Graph</button>
+            <button id="add-node" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">Add Node</button>
+            <button id="remove-node" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">Remove Node</button>
+            <button id="add-edge" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded">Add Edge</button>
+            <button id="remove-edge" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded">Remove Edge</button>
+            <select id="algorithm" class="bg-gray-200 border border-gray-300 text-gray-700 py-2 px-4 rounded">
                 <option value="bfs">Breadth-First Search (BFS)</option>
                 <option value="dfs">Depth-First Search (DFS)</option>
             </select>
-            <button id="run-algorithm">Run Algorithm</button>
-            <label for="animation-speed">Animation Speed:</label>
-            <input type="range" id="animation-speed" min="1" max="10" value="5">
+            <button id="run-algorithm" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded">Run Algorithm</button>
+            <div class="w-full flex items-center justify-center mt-2">
+                <label for="animation-speed" class="mr-2">Animation Speed:</label>
+                <input type="range" id="animation-speed" min="1" max="10" value="5" class="w-48">
+            </div>
         </div>
-        <canvas id="graph-canvas"></canvas>
-        <div id="algorithm-result"></div>
+        <canvas id="graph-canvas" class="bg-white border border-gray-300 rounded-lg flex-grow"></canvas>
+        <div id="algorithm-result" class="bg-gray-200 mt-4 p-4 rounded-lg text-center text-lg font-bold hidden"></div>
     </main>
     <script src="{{ url_for('static', filename='js/graph.js') }}"></script>
     <script src="{{ url_for('static', filename='js/algorithms.js') }}"></script>

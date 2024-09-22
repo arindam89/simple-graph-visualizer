@@ -115,7 +115,7 @@ document.getElementById('remove-edge').addEventListener('click', () => {
 function displayFinalResult(result) {
     const resultDiv = document.getElementById('algorithm-result');
     resultDiv.textContent = `Algorithm result: ${result.join(' -> ')}`;
-    resultDiv.style.display = 'block';
+    resultDiv.classList.remove('hidden');
 }
 
 function animateAlgorithm(steps, result) {

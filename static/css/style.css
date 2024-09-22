@@ -1,54 +1,11 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-}
-
-header {
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 1rem;
-}
-
-main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
-
-#controls {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    padding: 1rem;
-    background-color: #f0f0f0;
-}
-
+/* Custom styles that can't be achieved with Tailwind */
 #graph-canvas {
-    flex: 1;
-    border: 1px solid #ccc;
+    width: 100%;
+    height: 100%;
 }
 
-button, select {
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-}
-
-#algorithm-result {
-    background-color: #f0f0f0;
-    padding: 1rem;
-    text-align: center;
-    font-size: 1.2rem;
-    font-weight: bold;
-    display: none;
-}
-
-@media (max-width: 768px) {
+@media (max-width: 640px) {
     #controls {
-        flex-wrap: wrap;
+        flex-direction: column;
     }
 }
