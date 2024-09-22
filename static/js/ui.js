@@ -17,12 +17,21 @@ function drawGraph(highlightedNode = null, highlightedEdge = null) {
     ctx.lineWidth = 2;
     for (const [nodeId, neighbors] of graph.nodes.entries()) {
         const sourcePos = nodePositions.get(nodeId);
-        for (const neighborId of neighbors) {
+        for (const [neighborId, weight] of neighbors.entries()) {
             const targetPos = nodePositions.get(neighborId);
             ctx.beginPath();
             ctx.moveTo(sourcePos.x, sourcePos.y);
             ctx.lineTo(targetPos.x, targetPos.y);
             ctx.stroke();
+
+            // Draw weight
+            const midX = (sourcePos.x + targetPos.x) / 2;
+            const midY = (sourcePos.y + targetPos.y) / 2;
+            ctx.fillStyle = '#666';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(weight, midX, midY);
         }
     }
 
@@ -97,8 +106,9 @@ document.getElementById('remove-node').addEventListener('click', () => {
 document.getElementById('add-edge').addEventListener('click', () => {
     const source = prompt('Enter source node ID:');
     const target = prompt('Enter target node ID:');
-    if (source !== null && target !== null) {
-        graph.addEdge(parseInt(source), parseInt(target));
+    const weight = prompt('Enter edge weight:');
+    if (source !== null && target !== null && weight !== null) {
+        graph.addEdge(parseInt(source), parseInt(target), parseInt(weight));
         drawGraph();
     }
 });
@@ -112,13 +122,20 @@ document.getElementById('remove-edge').addEventListener('click', () => {
     }
 });
 
-function displayFinalResult(result) {
+function displayFinalResult(result, distances = null) {
     const resultDiv = document.getElementById('algorithm-result');
-    resultDiv.textContent = `Algorithm result: ${result.join(' -> ')}`;
+    let resultText = `Algorithm result: ${result.join(' -> ')}`;
+    if (distances) {
+        resultText += '\nShortest distances:';
+        for (const [node, distance] of distances) {
+            resultText += `\nNode ${node}: ${distance}`;
+        }
+    }
+    resultDiv.textContent = resultText;
     resultDiv.classList.remove('hidden');
 }
 
-function animateAlgorithm(steps, result) {
+function animateAlgorithm(steps, result, distances = null) {
     const speed = document.getElementById('animation-speed').value;
     let i = 0;
     function animate() {
@@ -133,7 +150,7 @@ function animateAlgorithm(steps, result) {
             setTimeout(animate, 1000 / speed);
         } else {
             drawGraph();
-            displayFinalResult(result);
+            displayFinalResult(result, distances);
         }
     }
     animate();
@@ -147,11 +164,14 @@ document.getElementById('run-algorithm').addEventListener('click', () => {
         let algorithmResult;
         if (algorithm === 'bfs') {
             algorithmResult = bfs(graph, startNode);
+            animateAlgorithm(algorithmResult.steps, algorithmResult.result);
         } else if (algorithm === 'dfs') {
             algorithmResult = dfs(graph, startNode);
+            animateAlgorithm(algorithmResult.steps, algorithmResult.result);
+        } else if (algorithm === 'dijkstra') {
+            algorithmResult = dijkstra(graph, startNode);
+            animateAlgorithm(algorithmResult.steps, algorithmResult.result, algorithmResult.distances);
         }
-
-        animateAlgorithm(algorithmResult.steps, algorithmResult.result);
     } else {
         alert('Invalid start node ID');
     }

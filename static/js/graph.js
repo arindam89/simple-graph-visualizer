@@ -5,7 +5,7 @@ class Graph {
 
     addNode(id) {
         if (!this.nodes.has(id)) {
-            this.nodes.set(id, new Set());
+            this.nodes.set(id, new Map());
         }
     }
 
@@ -18,11 +18,11 @@ class Graph {
         }
     }
 
-    addEdge(source, target) {
+    addEdge(source, target, weight = 1) {
         this.addNode(source);
         this.addNode(target);
-        this.nodes.get(source).add(target);
-        this.nodes.get(target).add(source);
+        this.nodes.get(source).set(target, weight);
+        this.nodes.get(target).set(source, weight);
     }
 
     removeEdge(source, target) {
@@ -33,7 +33,7 @@ class Graph {
     }
 
     getNeighbors(id) {
-        return Array.from(this.nodes.get(id) || []);
+        return Array.from(this.nodes.get(id) || []).map(([neighbor, weight]) => ({ id: neighbor, weight }));
     }
 
     getAllNodes() {
@@ -49,7 +49,7 @@ function generateRandomGraph(numNodes, numEdges) {
         graph.addNode(i);
     }
 
-    // Add random edges
+    // Add random edges with weights
     for (let i = 0; i < numEdges; i++) {
         const source = Math.floor(Math.random() * numNodes);
         let target = Math.floor(Math.random() * numNodes);
@@ -59,7 +59,8 @@ function generateRandomGraph(numNodes, numEdges) {
             target = Math.floor(Math.random() * numNodes);
         }
 
-        graph.addEdge(source, target);
+        const weight = Math.floor(Math.random() * 10) + 1; // Random weight between 1 and 10
+        graph.addEdge(source, target, weight);
     }
 
     return graph;

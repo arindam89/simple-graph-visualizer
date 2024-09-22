@@ -11,7 +11,7 @@ function bfs(graph, startNode) {
         result.push(node);
         steps.push({ node, type: 'visit' });
 
-        for (const neighbor of graph.getNeighbors(node)) {
+        for (const { id: neighbor } of graph.getNeighbors(node)) {
             if (!visited.has(neighbor)) {
                 visited.add(neighbor);
                 queue.push(neighbor);
@@ -33,7 +33,7 @@ function dfs(graph, startNode) {
         result.push(node);
         steps.push({ node, type: 'visit' });
 
-        for (const neighbor of graph.getNeighbors(node)) {
+        for (const { id: neighbor } of graph.getNeighbors(node)) {
             if (!visited.has(neighbor)) {
                 steps.push({ from: node, to: neighbor, type: 'edge' });
                 dfsRecursive(neighbor);
@@ -43,4 +43,46 @@ function dfs(graph, startNode) {
 
     dfsRecursive(startNode);
     return { steps, result };
+}
+
+function dijkstra(graph, startNode) {
+    const distances = new Map();
+    const previous = new Map();
+    const unvisited = new Set(graph.getAllNodes());
+    const steps = [];
+    const result = [];
+
+    // Initialize distances
+    for (const node of graph.getAllNodes()) {
+        distances.set(node, node === startNode ? 0 : Infinity);
+        previous.set(node, null);
+    }
+
+    while (unvisited.size > 0) {
+        // Find the unvisited node with the smallest distance
+        let currentNode = Array.from(unvisited).reduce((minNode, node) => 
+            distances.get(node) < distances.get(minNode) ? node : minNode
+        );
+
+        unvisited.delete(currentNode);
+        result.push(currentNode);
+        steps.push({ node: currentNode, type: 'visit' });
+
+        if (distances.get(currentNode) === Infinity) {
+            break; // All remaining nodes are inaccessible
+        }
+
+        for (const { id: neighbor, weight } of graph.getNeighbors(currentNode)) {
+            if (unvisited.has(neighbor)) {
+                const tentativeDistance = distances.get(currentNode) + weight;
+                if (tentativeDistance < distances.get(neighbor)) {
+                    distances.set(neighbor, tentativeDistance);
+                    previous.set(neighbor, currentNode);
+                    steps.push({ from: currentNode, to: neighbor, type: 'edge' });
+                }
+            }
+        }
+    }
+
+    return { steps, result, distances, previous };
 }
