@@ -38,6 +38,15 @@ button, select {
     font-size: 1rem;
 }
 
+#algorithm-result {
+    background-color: #f0f0f0;
+    padding: 1rem;
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: none;
+}
+
 @media (max-width: 768px) {
     #controls {
         flex-wrap: wrap;

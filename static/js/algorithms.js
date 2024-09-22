@@ -20,7 +20,7 @@ function bfs(graph, startNode) {
         }
     }
 
-    return steps;
+    return { steps, result };
 }
 
 function dfs(graph, startNode) {
@@ -42,5 +42,5 @@ function dfs(graph, startNode) {
     }
 
     dfsRecursive(startNode);
-    return steps;
+    return { steps, result };
 }

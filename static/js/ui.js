@@ -112,7 +112,13 @@ document.getElementById('remove-edge').addEventListener('click', () => {
     }
 });
 
-function animateAlgorithm(steps) {
+function displayFinalResult(result) {
+    const resultDiv = document.getElementById('algorithm-result');
+    resultDiv.textContent = `Algorithm result: ${result.join(' -> ')}`;
+    resultDiv.style.display = 'block';
+}
+
+function animateAlgorithm(steps, result) {
     const speed = document.getElementById('animation-speed').value;
     let i = 0;
     function animate() {
@@ -127,6 +133,7 @@ function animateAlgorithm(steps) {
             setTimeout(animate, 1000 / speed);
         } else {
             drawGraph();
+            displayFinalResult(result);
         }
     }
     animate();
@@ -137,14 +144,14 @@ document.getElementById('run-algorithm').addEventListener('click', () => {
     const startNode = parseInt(prompt('Enter start node ID:'));
 
     if (graph.nodes.has(startNode)) {
-        let steps;
+        let algorithmResult;
         if (algorithm === 'bfs') {
-            steps = bfs(graph, startNode);
+            algorithmResult = bfs(graph, startNode);
         } else if (algorithm === 'dfs') {
-            steps = dfs(graph, startNode);
+            algorithmResult = dfs(graph, startNode);
         }
 
-        animateAlgorithm(steps);
+        animateAlgorithm(algorithmResult.steps, algorithmResult.result);
     } else {
         alert('Invalid start node ID');
     }
