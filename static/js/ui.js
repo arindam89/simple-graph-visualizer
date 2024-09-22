@@ -9,7 +9,7 @@ function resizeCanvas() {
     drawGraph();
 }
 
-function drawGraph() {
+function drawGraph(highlightedNode = null, highlightedEdge = null) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw edges
@@ -26,11 +26,23 @@ function drawGraph() {
         }
     }
 
+    // Highlight edge if specified
+    if (highlightedEdge) {
+        const sourcePos = nodePositions.get(highlightedEdge.from);
+        const targetPos = nodePositions.get(highlightedEdge.to);
+        ctx.strokeStyle = '#ff0000';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(sourcePos.x, sourcePos.y);
+        ctx.lineTo(targetPos.x, targetPos.y);
+        ctx.stroke();
+    }
+
     // Draw nodes
-    ctx.fillStyle = '#3498db';
-    ctx.strokeStyle = '#2980b9';
-    ctx.lineWidth = 2;
     for (const [nodeId, pos] of nodePositions.entries()) {
+        ctx.fillStyle = nodeId === highlightedNode ? '#ff0000' : '#3498db';
+        ctx.strokeStyle = '#2980b9';
+        ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.arc(pos.x, pos.y, 20, 0, 2 * Math.PI);
         ctx.fill();
@@ -41,7 +53,6 @@ function drawGraph() {
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(nodeId, pos.x, pos.y);
-        ctx.fillStyle = '#3498db';
     }
 }
 
@@ -101,19 +112,39 @@ document.getElementById('remove-edge').addEventListener('click', () => {
     }
 });
 
+function animateAlgorithm(steps) {
+    const speed = document.getElementById('animation-speed').value;
+    let i = 0;
+    function animate() {
+        if (i < steps.length) {
+            const step = steps[i];
+            if (step.type === 'visit') {
+                drawGraph(step.node);
+            } else if (step.type === 'edge') {
+                drawGraph(null, { from: step.from, to: step.to });
+            }
+            i++;
+            setTimeout(animate, 1000 / speed);
+        } else {
+            drawGraph();
+        }
+    }
+    animate();
+}
+
 document.getElementById('run-algorithm').addEventListener('click', () => {
     const algorithm = document.getElementById('algorithm').value;
     const startNode = parseInt(prompt('Enter start node ID:'));
 
     if (graph.nodes.has(startNode)) {
-        let result;
+        let steps;
         if (algorithm === 'bfs') {
-            result = bfs(graph, startNode);
+            steps = bfs(graph, startNode);
         } else if (algorithm === 'dfs') {
-            result = dfs(graph, startNode);
+            steps = dfs(graph, startNode);
         }
 
-        alert(`${algorithm.toUpperCase()} result: ${result.join(' -> ')}`);
+        animateAlgorithm(steps);
     } else {
         alert('Invalid start node ID');
     }
